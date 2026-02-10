@@ -1,8 +1,8 @@
-var builder = WebApplication.CreateBuilder(args);
+//var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+/*builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -41,4 +41,34 @@ app.Run();
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}*/
+using Microsoft.EntityFrameworkCore;
+using AgendaAcademicaApi.Models;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// 1. Configurar la conexión a SQL Server
+builder.Services.AddDbContext<AgendaAcademicaContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// 2. IMPORTANTE: Agregar soporte para Controladores
+builder.Services.AddControllers();
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// 3. Configurar Swagger (para probar tu API)
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+// 4. Mapear los controladores
+app.MapControllers();
+
+app.Run();
